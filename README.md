@@ -22,7 +22,79 @@ Template rule là bản gốc dùng chung cho mọi dự án. Muốn đổi rule
 
 ## Cài đặt
 
-Khai báo trong `.claude/settings.json` của dự án (commit file này):
+Các bước dưới đây dành cho máy chưa cài gì. Bước nào máy đã có thì bỏ qua.
+
+### Bước 1: Cài Homebrew
+
+macOS dùng Homebrew để cài Git. Windows bỏ qua bước này.
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Thêm Homebrew vào PATH trong `~/.zshrc` (máy Apple Silicon, máy Intel bỏ qua):
+
+```sh
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+source ~/.zshrc
+
+# Kiểm tra
+brew --version
+```
+
+### Bước 2: Cài Git
+
+Claude Code tải marketplace từ GitHub bằng Git.
+
+```sh
+brew install git
+
+# Kiểm tra
+git --version
+```
+
+Windows: tải bản cài từ <https://git-scm.com/download/win>.
+
+### Bước 3: Cài Claude Code
+
+```sh
+# macOS, Linux, WSL
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+```powershell
+# Windows PowerShell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Mở terminal mới rồi kiểm tra:
+
+```sh
+claude --version
+claude doctor
+```
+
+### Bước 4: Đăng nhập
+
+```sh
+claude
+```
+
+Lần chạy đầu, Claude Code mở trình duyệt để đăng nhập tài khoản Claude (Pro/Max/Team/Enterprise) hoặc Anthropic Console. Đăng nhập xong gõ `/exit` để thoát.
+
+### Bước 5: Thêm marketplace
+
+```sh
+claude plugin marketplace add TrungVan1519/baseClaudePlugin
+```
+
+Lệnh này đăng ký marketplace tên `trungvan` trên máy. Kiểm tra bằng `claude plugin marketplace list`.
+
+### Bước 6: Khai báo plugin trong dự án
+
+Bước này chỉ làm một lần cho mỗi dự án, người đầu tiên làm rồi commit. Thành viên khác clone về đã có sẵn thì bỏ qua.
+
+Thêm vào `.claude/settings.json` của dự án:
 
 ```json
 {
@@ -40,13 +112,32 @@ Khai báo trong `.claude/settings.json` của dự án (commit file này):
 }
 ```
 
-Mỗi người clone dự án cài plugin một lần:
+### Bước 7: Cài plugin
+
+Chạy trong thư mục gốc của dự án:
 
 ```sh
 claude plugin install tv@trungvan --scope project
 ```
 
-Sau đó chạy `/tv:init` trong dự án để tạo `CLAUDE.md` và `.claude/rules/`.
+Kiểm tra bằng `claude plugin list`, thấy `tv@trungvan` ở trạng thái enabled là được.
+
+### Bước 8: Khởi tạo dự án
+
+```sh
+claude
+```
+
+Lần đầu mở dự án, Claude Code hỏi có tin tưởng thư mục không, chọn đồng ý. Sau đó gõ `/tv:init` để tạo `CLAUDE.md` và `.claude/rules/`, rồi commit các file này.
+
+Thành viên clone dự án đã có `CLAUDE.md` và `.claude/rules/` thì không cần chạy lại `/tv:init`, trừ khi hook `SessionStart` báo rule lệch template.
+
+### Cập nhật plugin
+
+```sh
+claude plugin marketplace update trungvan
+claude plugin update tv@trungvan
+```
 
 ## Phát triển
 
