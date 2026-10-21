@@ -1,0 +1,9 @@
+{
+  "name": "tv",
+  "version": "1.0.0",
+  "description": "Vai trò /tv:dev (Flutter/Dart developer) và /tv:sa (Solution Architect), kèm template CLAUDE.md và .claude/rules/",
+  "author": {
+    "name": "Trung Van"
+  },
+  "repository": "https://github.com/TrungVan1519/baseClaudePlugin"
+}

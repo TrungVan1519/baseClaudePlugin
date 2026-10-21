@@ -1,0 +1,14 @@
+{
+  "name": "trungvan",
+  "owner": {
+    "name": "Trung Van"
+  },
+  "description": "Plugin Claude Code cá nhân của Trung Van",
+  "plugins": [
+    {
+      "name": "tv",
+      "source": "./plugins/tv",
+      "description": "Vai trò /tv:dev (Flutter/Dart developer) và /tv:sa (Solution Architect), kèm template CLAUDE.md và .claude/rules/"
+    }
+  ]
+}
