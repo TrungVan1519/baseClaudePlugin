@@ -254,14 +254,16 @@ Hằng số của Package đặt trong class `XConstant` tại `lib/src/utils/x_
 AuthConstant.kMinPasswordLength
 AppConstant.kLocaleCodeKey
 
-// Phụ thuộc dotenv → XConstant (minh họa, repo hiện chưa dùng dotenv)
-AppConstant.kApiBaseUrl
+// Phụ thuộc dotenv → XConstant
+BaseAppConstant.kMapboxAccessToken
 
 // Hardcode → inline trong Data Source
 Future<bool> userExists(String userId) async {
-  final snapshot = await FirestoreClient.instance.doc('users/$userId').get();
+  final document = await FirestoreClient.instance.getDocument(
+    'users/$userId',
+  );
 
-  return snapshot.exists;
+  return document != null;
 }
 ```
 
