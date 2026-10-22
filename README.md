@@ -20,7 +20,7 @@ Plugin không nạp được rule luôn bật vào dự án, nên template nằm
 
 Template rule là bản gốc dùng chung cho mọi dự án. Muốn đổi rule thì sửa template trong plugin, không sửa bản chép trong dự án. Hook so sánh nội dung rule bỏ qua frontmatter, nên dự án được chỉnh `paths` riêng. Dự án chưa có file rule nào thì hook không báo.
 
-## Cài đặt
+## Chuẩn bị
 
 Các bước dưới đây dành cho máy chưa cài gì. Bước nào máy đã có thì bỏ qua.
 
@@ -82,7 +82,11 @@ claude
 
 Lần chạy đầu, Claude Code mở trình duyệt để đăng nhập tài khoản Claude (Pro/Max/Team/Enterprise) hoặc Anthropic Console. Đăng nhập xong gõ `/exit` để thoát.
 
-### Bước 5: Thêm marketplace
+## Cài đặt
+
+Cần làm xong mục [Chuẩn bị](#chuẩn-bị) trước.
+
+### Bước 1: Thêm marketplace
 
 ```sh
 claude plugin marketplace add TrungVan1519/baseClaudePlugin
@@ -90,7 +94,7 @@ claude plugin marketplace add TrungVan1519/baseClaudePlugin
 
 Lệnh này đăng ký marketplace tên `trungvan` trên máy. Kiểm tra bằng `claude plugin marketplace list`.
 
-### Bước 6: Khai báo plugin trong dự án
+### Bước 2: Khai báo plugin trong dự án
 
 Bước này chỉ làm một lần cho mỗi dự án, người đầu tiên làm rồi commit. Thành viên khác clone về đã có sẵn thì bỏ qua.
 
@@ -112,7 +116,7 @@ Thêm vào `.claude/settings.json` của dự án:
 }
 ```
 
-### Bước 7: Cài plugin
+### Bước 3: Cài plugin
 
 Chạy trong thư mục gốc của dự án:
 
@@ -122,7 +126,7 @@ claude plugin install tv@trungvan --scope project
 
 Kiểm tra bằng `claude plugin list`, thấy `tv@trungvan` ở trạng thái enabled là được.
 
-### Bước 8: Khởi tạo dự án
+### Bước 4: Khởi tạo dự án
 
 ```sh
 claude
@@ -132,12 +136,33 @@ Lần đầu mở dự án, Claude Code hỏi có tin tưởng thư mục không
 
 Thành viên clone dự án đã có `CLAUDE.md` và `.claude/rules/` thì không cần chạy lại `/tv:init`, trừ khi hook `SessionStart` báo rule lệch template.
 
-### Cập nhật plugin
+## Cập nhật
+
+Làm khi plugin có phiên bản mới. Các lệnh chạy trong thư mục gốc của dự án.
+
+### Bước 1: Cập nhật marketplace
 
 ```sh
 claude plugin marketplace update trungvan
-claude plugin update tv@trungvan
 ```
+
+Lệnh này tải bản mới nhất của marketplace về máy.
+
+### Bước 2: Cập nhật plugin
+
+```sh
+claude plugin update tv@trungvan --scope project
+```
+
+Kiểm tra bằng `claude plugin list`, thấy `tv@trungvan` mang `version` mới là được.
+
+### Bước 3: Nạp lại plugin
+
+Phiên Claude Code đang mở cần gõ `/exit` để thoát rồi chạy lại `claude` để nạp bản mới.
+
+### Bước 4: Đồng bộ template
+
+Nếu bản mới có thay đổi template, hook `SessionStart` sẽ báo rule lệch template. Khi đó gõ `/tv:init` để đồng bộ `CLAUDE.md` và `.claude/rules/`, rồi commit các file này. Hook không báo thì bỏ qua bước này.
 
 ## Phát triển
 
