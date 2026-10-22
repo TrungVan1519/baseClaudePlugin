@@ -13,13 +13,15 @@ Tất cả quy tắc dưới đây là bắt buộc, áp dụng cho mọi code v
 - Code sinh từ template `flutter create` của Plugin: `lib/*_platform_interface.dart`, `lib/*_method_channel.dart`.
 - File sinh tự động, không sửa tay: `*.g.dart`, `*.gen.dart` (flutter_gen), file `.dart` trong `lib/src/l10n/` do `gen-l10n` sinh, `firebase_options.dart`.
 
-**Thứ tự ưu tiên:** Quy tắc 2-10 cao hơn code cũ trong repo. Quy tắc 1 (bám theo code cũ) chỉ áp dụng cho những gì quy tắc 2-10 chưa quy định.
+**Thứ tự ưu tiên:** Các quy tắc ở mục 2-5 cao hơn code cũ trong repo. Quy tắc 1.1 (bám theo code cũ) chỉ áp dụng cho những gì mục 2-5 chưa quy định.
 
 **Áp dụng hồi tố:** Code cũ vi phạm quy tắc style thì xử lý theo nguyên tắc hồi tố trong `CLAUDE.md`.
 
-## 1. Bám theo code cũ, không tự ý dùng style mới
+## 1. Nguyên tắc chung
 
-Trước khi viết bất kỳ widget/class nào, tìm ít nhất 1-2 file tương tự đã có trong cùng scope (hoặc scope liên quan gần nhất) để đối chiếu cách tổ chức, cách đặt tên, cách dùng theme/extension sẵn có. Không phát minh pattern mới nếu repo đã có pattern tương đương. Nếu code tham chiếu vi phạm quy tắc 2-10 thì không bám theo phần vi phạm, và xử lý theo quy tắc hồi tố.
+### 1.1. Bám theo code cũ, không tự ý dùng style mới
+
+Trước khi viết bất kỳ widget/class nào, tìm ít nhất 1-2 file tương tự đã có trong cùng scope (hoặc scope liên quan gần nhất) để đối chiếu cách tổ chức, cách đặt tên, cách dùng theme/extension sẵn có. Không phát minh pattern mới nếu repo đã có pattern tương đương. Nếu code tham chiếu vi phạm quy tắc ở mục 2-5 thì không bám theo phần vi phạm, và xử lý theo quy tắc hồi tố.
 
 Ví dụ: Lấy màu/text style theo theme trong `plugins/app_plugin` → dùng extension có sẵn:
 
@@ -29,7 +31,9 @@ backgroundColor: context.colorTheme.surface
 style: context.textTheme.titleMedium
 ```
 
-## 2. Dart dot-shorthand
+## 2. Cú pháp Dart
+
+### 2.1. Dart dot-shorthand
 
 Dùng dot-shorthand (`.member`, `.new(...)`, `.named(...)`) bất cứ khi nào type đích đã rõ từ context và member thuộc chính type đích. Áp dụng cho enum, static getter/method, constructor (kể cả constructor đặt tên, factory) ở mọi vị trí có type đích tường minh:
 
@@ -77,7 +81,53 @@ return [
 success: .lerp(success, other.success, t)!,  // thay vì Color.lerp(...)!
 ```
 
-## 3. Thứ tự khai báo trong class
+### 2.2. Luôn dùng block body
+
+Mọi thân hàm luôn dùng block body `{ ... }`, không dùng expression body `=> ...`: Method của class (kể cả `build`, `@override`), function top-level/local, callback/closure, getter/setter. Không áp dụng cho `switch` expression (`case X => ...`, `final w when w < 600 => ...`) vì đó không phải thân hàm.
+
+```dart
+// Đúng
+Widget _buildHeader(BuildContext context) {
+  return Text(context.authL10n.signInTitle);
+}
+
+bool get isEmpty {
+  return items.isEmpty;
+}
+
+onPressed: () {
+  submit();
+},
+
+// Sai
+Widget _buildHeader(BuildContext context) => Text(context.authL10n.signInTitle);
+bool get isEmpty => items.isEmpty;
+onPressed: () => submit(),
+```
+
+### 2.3. Luôn dùng `const` khi được
+
+Thêm `const` cho mọi constructor call, collection literal và biến có giá trị hằng tại thời điểm compile:
+
+- Constructor call dạng đầy đủ và dạng dot-shorthand: `const Icon(Icons.notes, size: 12)`, `const .all(12)`, `const .only(bottom: 8)`, `const .new()`.
+- Biến cục bộ có giá trị hằng dùng `const` thay `final` (`const peekExtent = _cardSpacing + _cardWidth / 2;` khi cả 2 vế là `static const`).
+- Không lặp `const` bên trong context đã `const` (`const [AuthLocalizations.delegate]`, không viết `const [const ...]`).
+
+`analysis_options.yaml` của mọi Package bật thêm `prefer_const_constructors`, `prefer_const_declarations`, `prefer_const_literals_to_create_immutables`, `unnecessary_const`: Lỗi thiếu/thừa `const` hiện qua `flutter analyze`. Package mới tạo phải thêm 4 lint này.
+
+```dart
+// Đúng
+padding: const .symmetric(horizontal: 16),
+child: const CircularProgressIndicator(),
+
+// Sai
+padding: .symmetric(horizontal: 16),
+child: CircularProgressIndicator(),
+```
+
+## 3. Tổ chức code
+
+### 3.1. Thứ tự khai báo trong class
 
 Áp dụng cho mọi class (Widget, State, Entity, Model, Repository...), extension, mixin, enum.
 
@@ -192,7 +242,32 @@ class TransactionListNotifier extends Notifier<List<TransactionEntity>> {
 }
 ```
 
-## 4. Khoảng cách giữa children trong Row/Column
+### 3.2. Class hằng số: Phân loại theo việc có phụ thuộc dotenv hay không
+
+Hằng số của Package đặt trong class `XConstant` tại `lib/src/utils/x_constant.dart`, hằng số đặt tiền tố `k` (ví dụ `AppConstant.kSupportedLocales` trong `app_plugin`, `AuthConstant.kMinPasswordLength` trong `auth_module`).
+
+- **Gộp vào `XConstant`**: URL (base URL, discovery URL, redirect URL, domain, realm...), endpoint/path build từ biến dotenv, và business config khác (page size/limit, storage key, feature flag, client id, scope, default value...).
+- **Viết inline tại nơi dùng**: Endpoint/path hardcode không phụ thuộc dotenv (Firestore collection/document path, REST path cố định). Không gộp vào `XConstant`, không tạo class `Service`/helper riêng để chứa.
+
+```dart
+// Business config, storage key → XConstant
+AuthConstant.kMinPasswordLength
+AppConstant.kLocaleCodeKey
+
+// Phụ thuộc dotenv → XConstant (minh họa, repo hiện chưa dùng dotenv)
+AppConstant.kApiBaseUrl
+
+// Hardcode → inline trong Data Source
+Future<bool> userExists(String userId) async {
+  final snapshot = await FirestoreClient.instance.doc('users/$userId').get();
+
+  return snapshot.exists;
+}
+```
+
+## 4. Flutter UI
+
+### 4.1. Khoảng cách giữa children trong Row/Column
 
 Ưu tiên tối đa thuộc tính `spacing` của `Row`/`Column`, không chèn `SizedBox` xen giữa. Chỉ dùng `SizedBox` khi khoảng cách không đều và không gộp được thành một `spacing` chung (khi đó kết hợp `spacing` cho phần đều + `SizedBox` cho chỗ lệch, hoặc tách `Row`/`Column` con).
 
@@ -221,31 +296,40 @@ Column(
 )
 ```
 
-## 5. Luôn dùng block body
+### 4.2. Dùng tham số `padding` có sẵn của widget
 
-Mọi thân hàm luôn dùng block body `{ ... }`, không dùng expression body `=> ...`: Method của class (kể cả `build`, `@override`), function top-level/local, callback/closure, getter/setter. Không áp dụng cho `switch` expression (`case X => ...`, `final w when w < 600 => ...`) vì đó không phải thân hàm.
+Widget đã có tham số `padding` (`SingleChildScrollView`, `ListView`, `GridView` và các constructor `.builder`/`.separated`) thì truyền `padding` trực tiếp, không bọc thêm `Padding` bên ngoài hoặc bên trong. Ngoài việc thừa widget, `Padding` bọc ngoài còn thu hẹp vùng cuộn và làm nội dung bị cắt ở mép thay vì cuộn qua phần padding.
 
 ```dart
 // Đúng
-Widget _buildHeader(BuildContext context) {
-  return Text(context.authL10n.signInTitle);
-}
+SingleChildScrollView(
+  padding: const .all(16),
+  child: _buildForm(),
+)
 
-bool get isEmpty {
-  return items.isEmpty;
-}
+ListView.builder(
+  padding: const .symmetric(horizontal: 16),
+  itemCount: items.length,
+  itemBuilder: _buildItem,
+)
 
-onPressed: () {
-  submit();
-},
+// Sai: Bọc Padding thừa
+Padding(
+  padding: const .all(16),
+  child: SingleChildScrollView(child: _buildForm()),
+)
 
-// Sai
-Widget _buildHeader(BuildContext context) => Text(context.authL10n.signInTitle);
-bool get isEmpty => items.isEmpty;
-onPressed: () => submit(),
+SingleChildScrollView(
+  child: Padding(
+    padding: const .all(16),
+    child: _buildForm(),
+  ),
+)
 ```
 
-## 6. Đặt tên Provider/Notifier/AsyncNotifier (Riverpod)
+## 5. Riverpod
+
+### 5.1. Đặt tên Provider/Notifier/AsyncNotifier
 
 File đặt tên theo biến provider (snake_case), không theo tên class. `Provider<T>` dùng cho DI khai trong `di.dart` của Package, không tách file riêng.
 
@@ -260,30 +344,7 @@ Ví dụ (baseFlutter): `SignInNotifier`/`signInProvider` (`sign_in_provider.dar
 
 Provider/Notifier/AsyncNotifier/StreamNotifier đặt tên sai chuẩn (kể cả tên cũ kiểu hậu tố `Controller`/`ControllerProvider`) cần đổi tên đúng chuẩn: Tên class, tên biến provider, tên file và toàn bộ nơi gọi trong repo. Việc đổi tên theo quy tắc hồi tố (hỏi user trước).
 
-## 7. Class hằng số: Phân loại theo việc có phụ thuộc dotenv hay không
-
-Hằng số của Package đặt trong class `XConstant` tại `lib/src/utils/x_constant.dart`, hằng số đặt tiền tố `k` (ví dụ `AppConstant.kSupportedLocales` trong `app_plugin`, `AuthConstant.kMinPasswordLength` trong `auth_module`).
-
-- **Gộp vào `XConstant`**: URL (base URL, discovery URL, redirect URL, domain, realm...), endpoint/path build từ biến dotenv, và business config khác (page size/limit, storage key, feature flag, client id, scope, default value...).
-- **Viết inline tại nơi dùng**: Endpoint/path hardcode không phụ thuộc dotenv (Firestore collection/document path, REST path cố định). Không gộp vào `XConstant`, không tạo class `Service`/helper riêng để chứa.
-
-```dart
-// Business config, storage key → XConstant
-AuthConstant.kMinPasswordLength
-AppConstant.kLocaleCodeKey
-
-// Phụ thuộc dotenv → XConstant (minh họa, repo hiện chưa dùng dotenv)
-AppConstant.kApiBaseUrl
-
-// Hardcode → inline trong Data Source
-Future<bool> userExists(String userId) async {
-  final snapshot = await FirestoreClient.instance.doc('users/$userId').get();
-
-  return snapshot.exists;
-}
-```
-
-## 8. Gán giá trị `ref.watch` vào biến trước khi dùng
+### 5.2. Gán giá trị `ref.watch` vào biến trước khi dùng
 
 Không gọi `ref.watch(...)` inline trong biểu thức (tham số widget/constructor, `return`, chuỗi gọi method). Gán vào biến `final` đặt tên theo giá trị được watch, rồi mới dùng. Áp dụng cho Page/Widget, `build()` của Notifier/AsyncNotifier/StreamNotifier và Provider DI trong `di.dart`. Không áp dụng cho `ref.read` và `ref.listen`, được gọi inline.
 
@@ -303,9 +364,9 @@ return .new(authRepository: ref.watch(authRepositoryProvider));
 return AppPage(isLoading: ref.watch(signOutAsProvider).isLoading, child: ...);
 ```
 
-## 9. Model, Entity và state Riverpod dùng `Equatable`
+### 5.3. Model, Entity và state Riverpod dùng `Equatable`
 
-Mọi Model (Data Layer), Entity (Domain Layer) và class state tự định nghĩa của Notifier/AsyncNotifier/StreamNotifier đều `extends Equatable` (lib `equatable`), không tự viết `operator ==`/`hashCode`. Override `props` liệt kê đủ mọi field, xếp theo quy tắc 3 (nhóm getter/setter, mục `@override`, đứng trước các method như `copyWith`, `toEntity`) và quy tắc 5 (block body). Package chưa có `equatable` thì thêm theo mục "Lệnh" trong `CLAUDE.md`.
+Mọi Model (Data Layer), Entity (Domain Layer) và class state tự định nghĩa của Notifier/AsyncNotifier/StreamNotifier đều `extends Equatable` (lib `equatable`), không tự viết `operator ==`/`hashCode`. Override `props` liệt kê đủ mọi field, xếp theo quy tắc 3.1 (nhóm getter/setter, mục `@override`, đứng trước các method như `copyWith`, `toEntity`) và quy tắc 2.2 (block body). Package chưa có `equatable` thì thêm theo mục "Lệnh" trong `CLAUDE.md`.
 
 ```dart
 class SignInState extends Equatable {
@@ -324,24 +385,4 @@ class SignInState extends Equatable {
     );
   }
 }
-```
-
-## 10. Luôn dùng `const` khi được
-
-Thêm `const` cho mọi constructor call, collection literal và biến có giá trị hằng tại thời điểm compile:
-
-- Constructor call dạng đầy đủ và dạng dot-shorthand: `const Icon(Icons.notes, size: 12)`, `const .all(12)`, `const .only(bottom: 8)`, `const .new()`.
-- Biến cục bộ có giá trị hằng dùng `const` thay `final` (`const peekExtent = _cardSpacing + _cardWidth / 2;` khi cả 2 vế là `static const`).
-- Không lặp `const` bên trong context đã `const` (`const [AuthLocalizations.delegate]`, không viết `const [const ...]`).
-
-`analysis_options.yaml` của mọi Package bật thêm `prefer_const_constructors`, `prefer_const_declarations`, `prefer_const_literals_to_create_immutables`, `unnecessary_const`: Lỗi thiếu/thừa `const` hiện qua `flutter analyze`. Package mới tạo phải thêm 4 lint này.
-
-```dart
-// Đúng
-padding: const .symmetric(horizontal: 16),
-child: const CircularProgressIndicator(),
-
-// Sai
-padding: .symmetric(horizontal: 16),
-child: CircularProgressIndicator(),
 ```

@@ -10,11 +10,11 @@ File này chứa kiến trúc, lệnh và nguyên tắc làm việc chung. Style
 
 ## Kiến trúc
 
-<!-- TODO: Tóm tắt kiến trúc, quy tắc phụ thuộc giữa Package/layer, và trỏ tới tài liệu chi tiết (ví dụ `documents/pages/`). -->
+<!-- TODO: Tóm tắt kiến trúc, quy tắc phụ thuộc giữa Package/layer, và trỏ tới tài liệu chi tiết (ví dụ `documents/pages/`). Dự án không có kiến trúc (ví dụ dự án không phải code) thì ghi "Không có.". -->
 
 ## Lệnh
 
-<!-- TODO: Lệnh format, analyze, sinh code (l10n, build_runner...), cách thêm dependency. Ghi rõ phạm vi chạy của từng lệnh. -->
+<!-- TODO: Lệnh format, analyze, sinh code (l10n, build_runner...), cách thêm dependency. Ghi rõ phạm vi chạy của từng lệnh. Dự án không có lệnh (ví dụ dự án không phải code) thì ghi "Không có.". -->
 
 ## Nguyên tắc làm việc chung
 

@@ -3,13 +3,17 @@ paths:
   - "documents/**/*.md"
 ---
 
-# Style viết tài liệu
+# Style viết tài liệu (bắt buộc)
 
-Nội dung cũ trong file tài liệu đang sửa vi phạm style thì xử lý theo nguyên tắc hồi tố trong `CLAUDE.md`.
+Tất cả quy tắc dưới đây là bắt buộc, áp dụng cho mọi tài liệu viết trong repo, không chỉ riêng phần được nêu ví dụ.
+
+**Phạm vi:** Mọi file `.md` trong thư mục `documents/` (khớp `paths` ở đầu file).
+
+**Áp dụng hồi tố:** Tài liệu cũ vi phạm quy tắc style thì xử lý theo nguyên tắc hồi tố trong `CLAUDE.md`.
 
 ## 1. Vị trí và định dạng
 
-- Lưu trong `documents/pages/`, nhóm theo chủ đề vào thư mục con (ví dụ `architectures/`), tên file kebab-case (như `micro-frontend.md`, `clean-architecture.md`).
+- Lưu trong `documents/pages/`, nhóm theo chủ đề vào thư mục con (ví dụ `architectures/`), tên file camelCase (như `forAndroid.md`, `forIOS.md`).
 - Ưu tiên cập nhật tài liệu cùng chủ đề đã có thay vì tạo file mới.
 - Biểu đồ viết bằng Mermaid (code block `mermaid`), không dùng file ảnh: Render được trên GitHub/VS Code, diff được khi review.
 
