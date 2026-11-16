@@ -14,7 +14,7 @@ File này chứa kiến trúc, lệnh và nguyên tắc làm việc chung. Style
 
 ## Lệnh
 
-<!-- TODO: Lệnh format, analyze, sinh code (l10n, build_runner...), cách thêm dependency. Ghi rõ phạm vi chạy của từng lệnh. Dự án không có lệnh (ví dụ dự án không phải code) thì ghi "Không có.". -->
+<!-- TODO: Lệnh format, analyze, test (unit/widget/integration, chạy trên từng platform), sinh code (l10n, build_runner...), cách thêm dependency. Ghi rõ phạm vi chạy của từng lệnh. Dự án không có lệnh (ví dụ dự án không phải code) thì ghi "Không có.". -->
 
 ## Nguyên tắc làm việc chung
 
@@ -39,6 +39,7 @@ Hai file rule là bản chép từ template của plugin `tv`, dùng chung cho m
 
 - `/tv:dev`: Vai trò Flutter/Dart developer: Design UI, triển khai code và sửa lỗi, thực hiện đề xuất của `/tv:sa`.
 - `/tv:sa`: Vai trò Solution Architect: Rà soát, đề xuất giải pháp, viết tài liệu. Không sửa code.
+- `/tv:test`: Vai trò QA automation: Lập danh sách use case, test automation lần lượt từng use case trên từng platform. Không sửa code app.
 - `/tv:init`: Cài/đồng bộ `CLAUDE.md` và `.claude/rules/` theo template của plugin.
 
 Các skill chỉ được kích hoạt khi user gõ lệnh tường minh, không tự trigger theo ngữ cảnh.

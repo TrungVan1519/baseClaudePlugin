@@ -8,6 +8,7 @@ Marketplace Claude Code cá nhân, gồm plugin `tv`.
 | --- | --- |
 | `/tv:dev` | Flutter/Dart developer: Design UI, triển khai code, sửa lỗi, thực hiện đề xuất của `/tv:sa` |
 | `/tv:sa` | Solution Architect: Rà soát, đề xuất giải pháp, viết tài liệu. Không sửa code |
+| `/tv:test` | QA automation: Lập danh sách use case, test automation lần lượt từng use case trên từng platform, hướng dẫn user khi cần thao tác tay. Không sửa code app |
 | `/tv:init` | Cài/đồng bộ `CLAUDE.md` và `.claude/rules/` của dự án theo template |
 | Agent `tv:reviewer` | Rà soát code chỉ đọc, `/tv:sa` dùng khi rà soát |
 | Hook `SessionStart` | So sánh `.claude/rules/` của dự án với template, cảnh báo khi thiếu hoặc lệch |

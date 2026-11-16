@@ -1,6 +1,6 @@
 ---
 name: init
-description: Cài hoặc đồng bộ CLAUDE.md và .claude/rules/ của dự án hiện tại theo template của plugin tv, để /tv:dev và /tv:sa dùng được.
+description: Cài hoặc đồng bộ CLAUDE.md và .claude/rules/ của dự án hiện tại theo template của plugin tv, để /tv:dev, /tv:sa và /tv:test dùng được.
 disable-model-invocation: true
 ---
 

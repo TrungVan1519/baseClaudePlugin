@@ -1,6 +1,6 @@
 # Báo cáo kết quả
 
-Dùng chung cho mọi task của `/tv:dev` và `/tv:sa`. Ngắn gọn, không lặp lại nguyên văn code/tài liệu đã viết. Bỏ mục nào không có nội dung.
+Dùng chung cho mọi task của `/tv:dev`, `/tv:sa` và `/tv:test`. Ngắn gọn, không lặp lại nguyên văn code/tài liệu đã viết. Bỏ mục nào không có nội dung.
 
 - **Kết quả:** Tóm tắt đã làm gì.
 - **Thay đổi:** File đã tạo/sửa (code hoặc tài liệu).
