@@ -1,6 +1,6 @@
 {
   "name": "tv",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Vai trò /tv:dev (Flutter/Dart developer) và /tv:sa (Solution Architect), /tv:test (QA automation), kèm template CLAUDE.md và .claude/rules/",
   "author": {
     "name": "Trung Van"

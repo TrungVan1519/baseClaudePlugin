@@ -50,6 +50,7 @@ Giữ đầy đủ tên type khi:
 
 - Type đích không suy luận được: Gán vào `var`/`final`/`const` không khai báo kiểu, list literal không khai báo kiểu phần tử (`static const kSupportedLocales = [Locale('en'), Locale('vi')]`).
 - Member thuộc type khác type đích (class con, class tiện ích): `Colors.orange`/`Curves.easeOut`/`Icons.add` (type đích `Color`/`Curve`/`IconData`), `WidgetStateColor.resolveWith`, `BoxDecoration` cho `Decoration`, `RoundedRectangleBorder` cho `ShapeBorder`, `NeverScrollableScrollPhysics` cho `ScrollPhysics`, `XxxRepositoryImpl` cho Repository abstract, widget con cho `Widget`, `Theme.of`/`MediaQuery.of`.
+- File input của Pigeon (file định nghĩa API truyền cho `dart run pigeon --input`, thường nằm trong `pigeons/`): Không dùng dot-shorthand ở bất kỳ vị trí nào, vì Pigeon parse file bằng analyzer riêng có thể không hỗ trợ cú pháp này. Các quy tắc style khác vẫn áp dụng bình thường.
 
 ```dart
 borderRadius: .circular(borderRadius)        // thay vì BorderRadius.circular(...)
@@ -244,7 +245,7 @@ class TransactionListNotifier extends Notifier<List<TransactionEntity>> {
 
 ### 3.2. Class hằng số: Phân loại theo việc có phụ thuộc dotenv hay không
 
-Hằng số của Package đặt trong class `XConstant` tại `lib/src/utils/x_constant.dart`, hằng số đặt tiền tố `k` (ví dụ `AppConstant.kSupportedLocales` trong `app_plugin`, `AuthConstant.kMinPasswordLength` trong `auth_module`).
+Hằng số của Package đặt trong class `XConstant` tại `lib/src/constants/x_constant.dart` (không đặt trong `utils/`), hằng số đặt tiền tố `k` (ví dụ `AppConstant.kSupportedLocales` trong `app_plugin`, `AuthConstant.kMinPasswordLength` trong `auth_module`).
 
 - **Gộp vào `XConstant`**: URL (base URL, discovery URL, redirect URL, domain, realm...), endpoint/path build từ biến dotenv, và business config khác (page size/limit, storage key, feature flag, client id, scope, default value...).
 - **Viết inline tại nơi dùng**: Endpoint/path hardcode không phụ thuộc dotenv (Firestore collection/document path, REST path cố định). Không gộp vào `XConstant`, không tạo class `Service`/helper riêng để chứa.
